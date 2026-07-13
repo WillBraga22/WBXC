@@ -2,30 +2,26 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
 
-  console.log('=== CALLBACK EXECUTADO ===')
-  console.log('URL:', request.url)
+  console.log('========== CALLBACK ==========')
+  console.log(request.url)
 
   const code = searchParams.get('code')
   console.log('CODE:', code)
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=no_code`)
+    return NextResponse.json({
+      error: 'Sem código',
+      url: request.url,
+    })
   }
 
   const supabase = await createClient()
 
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+  const result = await supabase.auth.exchangeCodeForSession(code)
 
-  console.log('DATA:', data)
-  console.log('ERROR:', error)
+  console.log(result)
 
-  if (error) {
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(error.message)}`
-    )
-  }
-
-  return NextResponse.redirect(`${origin}/dashboard`)
+  return NextResponse.json(result)
 }
