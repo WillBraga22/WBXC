@@ -30,9 +30,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
+  const isAuthRoute =
+  request.nextUrl.pathname.startsWith('/login') ||
+  request.nextUrl.pathname.startsWith('/auth')
   const isPublicProposal = request.nextUrl.pathname.startsWith('/p/')
-  const isDashboardRoute =
+    const isDashboardRoute =
     !isAuthRoute &&
     !isPublicProposal &&
     !request.nextUrl.pathname.startsWith('/api')
